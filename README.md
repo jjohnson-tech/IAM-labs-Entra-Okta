@@ -1,6 +1,6 @@
 # IAM Labs: Microsoft Entra ID + Okta
 
-Hands-on identity and access management labs built in Microsoft Entra ID and Okta free/trial environments. Each lab maps an IAM concept to a working build, a test that proves it, and screenshots.
+Hands-on IAM labs in Microsoft Entra ID and Okta: hybrid sync, RBAC, MFA and passkeys, Conditional Access, PIM, SAML/OIDC SSO, federation, access reviews, and joiner-mover-leaver automation with PowerShell, Microsoft Graph and the Okta API. Each lab is documented with steps, proof, and production notes.
 
 **Author:** Javier "Jay" Johnson · [LinkedIn](https://linkedin.com/in/javier-johnson-it)
 
