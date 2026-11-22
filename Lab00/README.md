@@ -1,36 +1,46 @@
-Lab 00: Environment Setup (Entra ID + Okta)
-Goal
+# Lab 00: Environment Setup (Entra ID + Okta)
+## Goal
 
 Build a clean, repeatable lab base for the rest of the IAM series: a dedicated lab admin, two break-glass emergency accounts, and the same six test users in both Microsoft Entra ID and Okta.
 
-Environment
-Platform	Details
-Microsoft Entra ID	Project tenant (jjiamlaboutlook.onmicrosoft.com), Entra ID Free (P2 trial saved for later labs)
-Okta	Okta Integrator Free Plan org
-Tools	PowerShell 7, Microsoft Graph PowerShell SDK
-What I built
-Item	Purpose
-labadmin	Cloud-only work account for day-to-day lab admin (not my personal Microsoft account)
-bg-admin1, bg-admin2	Break-glass emergency Global Admins
-SG-BreakGlass-Exclude	Group that every Conditional Access policy will exclude
-6 test users	Same "cast" in Entra and Okta so every lab is comparable
-Test users
-User	Department	Job title	Role in later labs
-Ava Lee	IT	Helpdesk Technician	Scoped helpdesk admin
-Ben Cruz	Finance	Accountant	Regular user
-Cara Diaz	Finance	Finance Manager	Approver and reviewer
-Dan Moss	HR	HR Specialist	Regular user, mover tests
-Eve Park	IT	Cloud Engineer	Privileged user (PIM)
-Finn Ray	Sales	Contractor	Temporary access
-Steps
-1. Lab admin and tenant check
+## Environment
 
-Created labadmin as a cloud-only Global Admin and confirmed the tenant details and license tier.
+| Platform | Details |
+| --- | --- |
+| Microsoft Entra ID | Project tenant (`jjiamlaboutlook.onmicrosoft.com`), Entra ID Free (P2 trial saved for later labs) |
+| Okta | Okta Integrator Free Plan org |
+| Tools | PowerShell 7, Microsoft Graph PowerShell SDK |
+
+## What I built
+
+| Item | Purpose |
+| --- | --- |
+| `labadmin` | Cloud-only work account for day-to-day lab admin (not my personal Microsoft account) |
+| `bg-admin1`, `bg-admin2` | Break-glass emergency Global Admins |
+| `SG-BreakGlass-Exclude` | Group that every Conditional Access policy will exclude |
+| 6 test users | Same "cast" in Entra and Okta so every lab is comparable |
+
+### Test users
+
+| User | Department | Job title | Role in later labs |
+| --- | --- | --- | --- |
+| Ava Lee | IT | Helpdesk Technician | Scoped helpdesk admin |
+| Ben Cruz | Finance | Accountant | Regular user |
+| Cara Diaz | Finance | Finance Manager | Approver and reviewer |
+| Dan Moss | HR | HR Specialist | Regular user, mover tests |
+| Eve Park | IT | Cloud Engineer | Privileged user (PIM) |
+| Finn Ray | Sales | Contractor | Temporary access |
+
+## Steps
+
+### 1. Lab admin and tenant check
+
+Created `labadmin` as a cloud-only Global Admin and confirmed the tenant details and license tier.
 
 <img width="1060" height="472" alt="tenant_overview" src="https://github.com/user-attachments/assets/3bb44bc3-e79e-4948-b306-ea200b4d02d0" />
 
 
-2. Break-glass accounts
+### 2. Break-glass accounts
 
 Created two break-glass accounts with these design choices:
 
@@ -46,7 +56,7 @@ Added to SG-BreakGlass-Exclude: so every Conditional Access policy can exclude t
 <img width="1017" height="467" alt="breakglass-sggroup" src="https://github.com/user-attachments/assets/231d616d-2918-4897-92c0-3fa0cd7a3f81" />
 
 
-3. Test users created with Microsoft Graph PowerShell
+### 3. Test users created with Microsoft Graph PowerShell
 
 I created the six users with a script (create-test-users.ps1) instead of clicking through the portal.
 
@@ -65,7 +75,7 @@ I checked the data before changing anything, then created one user first (Ava), 
 <img width="862" height="276" alt="createduserscommand_output " src="https://github.com/user-attachments/assets/31e58854-ea64-4b01-bea8-ad100cfbeb9e" />
 
 
-4. Okta users
+### 4. Okta users
 
 Created the same six users in Okta with the same usernames as Entra (first.last@jjiamlaboutlook.onmicrosoft.com). This is deliberate: in the federation lab, Okta matches users to Entra by username.
 
@@ -80,16 +90,20 @@ Created the same six users in Okta with the same usernames as Entra (first.last@
 
 Problem I hit and how I fixed it
 
-Problem: My tenant already had users in the Finance and IT departments. My verification showed extra users, and later department-based rules (dynamic groups, Okta group rules) would have pulled in accounts that aren't part of the lab.
+## Problem I hit and how I fixed it
 
-Fix: I tagged the six lab users with a unique marker and added it to my checks:
+**Problem:** My tenant already had users in the Finance and IT departments. My verification showed extra users, and later department-based rules (dynamic groups, Okta group rules) would have pulled in accounts that aren't part of the lab.
 
-Entra: CompanyName = "JJ IAM Lab" (set with Update-MgUser)
-Okta: Organization = "JJ IAM Lab"
+**Fix:** I tagged the six lab users with a unique marker and added it to my checks:
+
+- Entra: `CompanyName = "JJ IAM Lab"` (set with `Update-MgUser`)
+- Okta: `Organization = "JJ IAM Lab"`
 
 Future rules use both conditions, for example:
 
+```
 (user.department -eq "Finance") -and (user.companyName -eq "JJ IAM Lab")
+```
 
 <img width="1172" height="197" alt="users-verified_ps" src="https://github.com/user-attachments/assets/442547c8-9c99-49c5-9cd7-ef7b043308b3" />
 
@@ -99,21 +113,27 @@ Future rules use both conditions, for example:
 
 Lesson: scope every change. Before building a rule or policy, make sure you can target exactly the users you mean and no one else.
 
-Results
-[x] Lab admin working; personal Microsoft account not used for admin work
-[x] Two break-glass accounts with permanent Global Admin and passkeys
-[x] SG-BreakGlass-Exclude ready for Conditional Access
-[x] Six tagged test users in Entra, created and verified by script
-[x] Six matching tagged users in Okta
-What I'd do differently in production
-Store break-glass credentials split between two people or in a physical safe, with FIDO2 hardware keys instead of phone passkeys.
-Set an alert on every break-glass sign-in, since they should never be used on a normal day.
-Create users from an HR system (source of truth) instead of a hard-coded list.
-Run scheduled automation with app-only certificate auth, and keep delegated auth for one-off admin work.
-Key concepts
-Concept	One-line meaning
-Tenant	An organization's own private instance of Entra ID
-Delegated vs app-only	A person signs in (delegated) vs an app signs in with a cert or secret (app-only)
-Scope	The permission a token carries; delegated access = scope and the user's role
-Break-glass account	Emergency admin that doesn't depend on anything that could break
-Staged (Okta)	Account exists but can't sign in until activated
+## Results
+
+- [x] Lab admin working; personal Microsoft account not used for admin work
+- [x] Two break-glass accounts with permanent Global Admin and passkeys
+- [x] `SG-BreakGlass-Exclude` ready for Conditional Access
+- [x] Six tagged test users in Entra, created and verified by script
+- [x] Six matching tagged users in Okta
+
+## What I'd do differently in production
+
+- Store break-glass credentials split between two people or in a physical safe, with **FIDO2 hardware keys** instead of phone passkeys.
+- Set an **alert on every break-glass sign-in**, since they should never be used on a normal day.
+- Create users from an HR system (source of truth) instead of a hard-coded list.
+- Run scheduled automation with **app-only certificate auth**, and keep delegated auth for one-off admin work.
+
+## Key concepts
+
+| Concept | One-line meaning |
+| --- | --- |
+| Tenant | An organization's own private instance of Entra ID |
+| Delegated vs app-only | A person signs in (delegated) vs an app signs in with a cert or secret (app-only) |
+| Scope | The permission a token carries; delegated access = scope **and** the user's role |
+| Break-glass account | Emergency admin that doesn't depend on anything that could break |
+| Staged (Okta) | Account exists but can't sign in until activated |
