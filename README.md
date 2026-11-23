@@ -9,7 +9,7 @@ Hands-on IAM labs in Microsoft Entra ID and Okta: hybrid sync, RBAC, MFA and pas
 | # | Lab | IAM concept | Platform | Status |
 | --- | --- | --- | --- | --- |
 | 00 | [Environment setup](lab00/) | Foundations | Entra + Okta | Done |
-| 01 | Hybrid sync with Cloud Sync | Directory services | Entra + AD | Planned |
+| 01 | Hybrid sync with Cloud Sync | Directory services | Entra + AD | Done |
 | 02 | Groups and least-privilege roles | RBAC | Entra + Azure | Planned |
 | 03 | Auth methods, passkeys, SSPR | Authentication, MFA | Entra | Planned |
 | 04 | Conditional Access | Authorization, Zero Trust | Entra | Planned |
