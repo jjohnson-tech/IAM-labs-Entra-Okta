@@ -66,6 +66,7 @@ Created two OUs: `Cloud-Synced` (to sync) and `Service-Accounts` (must never syn
 <img width="1015" height="367" alt="Screenshot 2026-11-22 202210" src="https://github.com/user-attachments/assets/73543c61-829a-4338-84c3-bbd7db9e8693" />
 
 <img width="976" height="595" alt="Screenshot 2026-11-22 202301" src="https://github.com/user-attachments/assets/143d07e0-58fd-4634-8636-e64954d57fc9" />
+
 ### 4. Install the Cloud Sync agent
 
 Installed the provisioning agent on DC02. Setup created a gMSA for the agent and registered it with the tenant. The agent only makes outbound HTTPS calls, so no inbound firewall ports were opened.
